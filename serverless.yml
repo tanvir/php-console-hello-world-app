@@ -1,0 +1,27 @@
+#serverless.yml
+service: php-console-app
+
+provider:
+    name: aws
+    region: eu-west-1
+    runtime: provided.al2
+
+plugins:
+    - ./vendor/bref/bref
+
+functions:
+    cron:
+        handler: bin/console
+        description: 'Hello world console command'
+        layers:
+            - ${bref:layer.php-81}
+            - ${bref:layer.console}
+        events:
+            - schedule:
+                  rate: cron(* * * * ? *)
+                  input: '"app:hello-world --verbose"'
+
+# Exclude files from deployment
+package:
+    patterns:
+        - '!tests/**'
